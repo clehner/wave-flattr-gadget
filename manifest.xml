@@ -1,6 +1,6 @@
 <extension 
     name="Flattr button"
-    description="Put a flattr.com button in a wave."
+    description="Lets you put flattr.com buttons in your waves."
     thumbnailUrl="http://www.lehnerstudios.com/wave/flattr/thumbnail-120.png">
   <author name="Charles Lehner"/>
   <menuHook location="toolbar" text="Insert a Flattr button." 
