@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+
+<ModulePrefs
+	title="Flattr Button"
+	height="60"
+	width="100"
+	description="Put a flattr.com button in a wave."
+	author="Charles Lehner"
+	author_email="gadgets@lehnerstudios.com"
+	screenshot=""
+	thumbnail="">
+	<Require feature="wave"/>
+	<Require feature="dynamic-height"/>
+</ModulePrefs>
+
+<Content type="html">
+<![CDATA[
+
+<style type="text/css">
+body, form {
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+}
+body:not(.edit) #edit-link, body:not(.setup) #setup, .setup #iframe {
+	display: none;
+}
+#edit-link {
+	color: #573;
+	vertical-align: top;
+}
+#url {
+	width: 25em;
+}
+h1 {
+	color: #3B6600;
+	font-size: 1.2em;
+	margin: 0 0 1em;
+}
+</style>
+
+<!-- need this for the new adjustWidth function-->
+<script src="http://wave-api.appspot.com/public/wave.js"></script>
+
+<iframe id="iframe" frameBorder=0 scrolling=no border=0 marginHeight=0 marginWidth=0 allowTransparency=true></iframe>
+<a href="" id="edit-link">Edit</a>
+<form id="setup">
+<h1>Flattr button</h1>
+<p>To submit a thing, go to <a href="https://flattr.com/submit">flattr.com</a>.</p>
+<p>Thing URL: <input id="url"><br>
+<label for="compact">Compact: <input type="checkbox" id="compact"></label></p>
+<a href="" id="update-btn">Update</a>
+</form>
+
+<script type="text/javascript">
+var iframe;
+var inSetup = false;
+var inEditMode = false;
+
+function $(id) {
+	return document.getElementById(id);
+}
+
+function showSetup() {
+	inSetup = true;
+	updateView();
+	return false;
+}
+
+function initialSetup() {
+	showSetup();
+	wave.setSnippet("Flattr");
+}
+
+function saveSetup() {
+	wave.getState().submitDelta({
+		"up_url": $("url").value,
+		"button": $("compact").checked ? "compact" : null
+	});
+	inSetup = false;
+	updateView();
+	return false;
+}
+
+function modeChanged(mode) {
+	inEditMode = (mode == wave.Mode.EDIT);
+	updateView();
+}
+
+function updateView(mode) {
+	document.body.className =
+		inSetup ? "setup" :
+		inEditMode ? "edit" : "";
+	gadgets.window.adjustHeight();
+	gadgets.window.adjustWidth();
+}
+
+function stateUpdated(state) {
+	var url = state.get("up_url");
+	var compact = state.get("button") == "compact";
+	$("url").value = url;
+	$("compact").checked = compact;
+	if (!url) {
+		initialSetup();
+		return;
+	}
+	inSetup = false;
+	
+	var qs =
+		"button=" + (compact ? "compact" : "") +
+		"&url=" + encodeURIComponent(url);
+	iframe.setAttribute('src', 'http://api.flattr.com/button/view/?' + qs);
+	iframe.setAttribute('width', compact ? 100 : 50);
+	iframe.setAttribute('height', compact ? 17 : 60);
+	updateView();
+}
+
+function gadgetLoad() {
+	if (!wave || !wave.isInWaveContainer()) { return; }
+	wave.ui.loadCss();
+	
+	iframe = $("iframe");
+	var setupForm = $("setup");
+
+	wave.ui.makeFrame(setupForm);
+	wave.ui.makeButton($("update-btn"));
+	setupForm.onsubmit = saveSetup;
+
+	$("edit-link").onclick = showSetup;
+	$("update-btn").onclick = saveSetup;
+		
+	wave.setStateCallback(stateUpdated);
+	wave.setModeCallback(modeChanged);
+}
+gadgets.util.registerOnLoadHandler(gadgetLoad);
+</script>
+
+]]></Content>
+</Module>
