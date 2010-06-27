@@ -4,7 +4,7 @@
 <ModulePrefs
 	title="Flattr Button"
 	height="60"
-	width="100"
+	width="360"
 	description="Put a flattr.com button in a wave."
 	author="Charles Lehner"
 	author_email="gadgets@lehnerstudios.com"
@@ -31,17 +31,23 @@ body:not(.edit) #edit-link, body:not(.setup) #setup, .setup #iframe {
 	vertical-align: top;
 }
 #url {
-	width: 25em;
+	width: 250px;
 }
 h1 {
 	color: #3B6600;
 	font-size: 1.2em;
 	margin: 0 0 1em;
 }
+#get-gadget-link {
+	font-size: 12px;
+	display: block;
+	text-align: right;
+	margin: -2em 1em 0px 0px;
+}
+#setup {
+	width: 360px;
+}
 </style>
-
-<!-- need this for the new adjustWidth function-->
-<script src="http://wave-api.appspot.com/public/wave.js"></script>
 
 <iframe id="iframe" frameBorder=0 scrolling=no border=0 marginHeight=0 marginWidth=0 allowTransparency=true></iframe>
 <a href="" id="edit-link">Edit</a>
@@ -50,7 +56,8 @@ h1 {
 <p>To submit a thing, go to <a href="https://flattr.com/submit">flattr.com</a>.</p>
 <p>Thing URL: <input id="url"><br>
 <label for="compact">Compact: <input type="checkbox" id="compact"></label></p>
-<a href="" id="update-btn">Update</a>
+<p><a href="" id="update-btn">Update</a></p>
+<a id="get-gadget-link" href="https://wave.google.com/wave/#restored:wave:googlewave.com%252Fw%252Bxfqdu1dzC" target="_parent">Get this gadget!</a>
 </form>
 
 <script type="text/javascript">
@@ -93,7 +100,7 @@ function updateView(mode) {
 		inSetup ? "setup" :
 		inEditMode ? "edit" : "";
 	gadgets.window.adjustHeight();
-	gadgets.window.adjustWidth();
+	gadgets.window.adjustWidth && gadgets.window.adjustWidth();
 }
 
 function stateUpdated(state) {
