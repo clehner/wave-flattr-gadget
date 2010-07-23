@@ -4,7 +4,6 @@
 <ModulePrefs
 	title="Flattr Button"
 	height="60"
-	width="360"
 	description="Put a flattr.com button in a wave."
 	author="Charles Lehner"
 	author_email="gadgets@lehnerstudios.com"
@@ -22,9 +21,13 @@ body, form {
 	margin: 0;
 	padding: 0;
 	font-size: 13px;
+	white-space: nowrap;
 }
 body:not(.edit) #edit-link, body:not(.setup) #setup, .setup #iframe {
 	display: none;
+}
+#container {
+	display: inline-block;
 }
 #edit-link {
 	color: #573;
@@ -49,6 +52,7 @@ h1 {
 }
 </style>
 
+<div id="container">
 <iframe id="iframe" frameBorder=0 scrolling=no border=0 marginHeight=0 marginWidth=0 allowTransparency=true></iframe>
 <a href="" id="edit-link">Edit</a>
 <form id="setup">
@@ -59,8 +63,10 @@ h1 {
 <p><a href="" id="update-btn">Update</a></p>
 <a id="get-gadget-link" href="https://wave.google.com/wave/#restored:wave:googlewave.com%252Fw%252Bxfqdu1dzC" target="_parent">Get this gadget!</a>
 </form>
+</div>
 
 <script type="text/javascript">
+var container;
 var iframe;
 var inSetup = false;
 var inEditMode = false;
@@ -77,7 +83,9 @@ function showSetup() {
 
 function initialSetup() {
 	showSetup();
-	wave.setSnippet("Flattr");
+	if (wave.setSnippet) {
+		wave.setSnippet("Flattr");
+	}
 }
 
 function saveSetup() {
@@ -99,8 +107,9 @@ function updateView(mode) {
 	document.body.className =
 		inSetup ? "setup" :
 		inEditMode ? "edit" : "";
-	gadgets.window.adjustHeight();
-	gadgets.window.adjustWidth && gadgets.window.adjustWidth();
+	gadgets.window.adjustHeight(container.offsetHeight);
+	gadgets.window.adjustWidth &&
+		gadgets.window.adjustWidth(container.offsetWidth);
 }
 
 function stateUpdated(state) {
@@ -127,6 +136,7 @@ function gadgetLoad() {
 	if (!wave || !wave.isInWaveContainer()) { return; }
 	wave.ui.loadCss();
 	
+	container = $("container");
 	iframe = $("iframe");
 	var setupForm = $("setup");
 
@@ -139,6 +149,8 @@ function gadgetLoad() {
 		
 	wave.setStateCallback(stateUpdated);
 	wave.setModeCallback(modeChanged);
+	
+	setTimeout(updateView, 500);
 }
 gadgets.util.registerOnLoadHandler(gadgetLoad);
 </script>
