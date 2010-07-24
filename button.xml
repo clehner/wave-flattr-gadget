@@ -75,6 +75,22 @@ function $(id) {
 	return document.getElementById(id);
 }
 
+// redirect links to waves, with rel=wave to requestNavigateTo()
+function redirectWaveLinks() {
+	document.addEventListener("click", function (e) {
+		var a = e.target;
+		if (a.nodeName == "A" &&
+			a.getAttribute("rel") == "wave") {
+			
+			var href = a.href;
+			var i = href.indexOf("#");
+			if (i != -1) {
+				gadgets.views.requestNavigateTo(href.substr(1));
+			}
+		}
+	}, false);
+}
+
 function showSetup() {
 	inSetup = true;
 	updateView();
@@ -103,13 +119,19 @@ function modeChanged(mode) {
 	updateView();
 }
 
-function updateView(mode) {
+function updateView(times) {
 	document.body.className =
 		inSetup ? "setup" :
 		inEditMode ? "edit" : "";
 	gadgets.window.adjustHeight(container.offsetHeight);
 	gadgets.window.adjustWidth &&
 		gadgets.window.adjustWidth(container.offsetWidth);
+	
+	if (times != 2) {
+		setTimeout(function () {
+			updateView(~~times + 1);
+		}, 250);
+	}
 }
 
 function stateUpdated(state) {
@@ -151,6 +173,10 @@ function gadgetLoad() {
 	wave.setModeCallback(modeChanged);
 	
 	setTimeout(updateView, 500);
+	
+	if (gadgets.views && gadgets.views.requestNavigateTo) {
+		redirectWaveLinks();
+	}
 }
 gadgets.util.registerOnLoadHandler(gadgetLoad);
 </script>
